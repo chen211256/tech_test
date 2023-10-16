@@ -17,16 +17,16 @@ from keras.layers import LSTM, Bidirectional
 from sklearn.preprocessing import OneHotEncoder, normalize, LabelEncoder
 
 from keras import callbacks
+import os
+script_dir = os.path.dirname(__file__)
 
 
-m1 = open('data/match_1.json')
+m1 = open(os.path.join(script_dir ,'data/match_1.json'))
 df1 = json.load(m1)
 
-m2 = open('data/match_2.json')
-df2 = json.load(m2)
 
 df1 = pd.DataFrame(df1)
-df2 = pd.DataFrame(df2)
+
 
 df1[['label']] = df1[['label']].astype('category')
 
@@ -46,10 +46,8 @@ def flatten_column(df):
     return flatten(label_), flatten(norm_)
 
 lab1_, norm1_=flatten_column(df1)
-lab2_, norm2_=flatten_column(df2)
-df1_long=pd.DataFrame({'label':lab1_,'norm':norm1_})
-df2_long=pd.DataFrame({'label':lab2_,'norm':norm2_})
 
+df1_long=pd.DataFrame({'label':lab1_,'norm':norm1_})
 
 
 tf.random.set_seed(1234)
@@ -127,7 +125,7 @@ epochs=10
 history_reg = model_reg.fit(X_train,y_train_r, epochs=epochs, batch_size=72, validation_data=(X_val,y_val_r),
     validation_steps=10,callbacks=[earlystopping])
 
-model_reg.save("figure/lstm/lstm_steps_"+str(epochs)+"_epochs.h5")
+model_reg.save(os.path.join(script_dir ,"result/lstm/lstm_reg_steps_"+str(epochs)+"_epochs.h5"))
 print("saved regression model to disk")
 model_reg.summary()
 
@@ -212,7 +210,7 @@ history_cl = model_cl.fit(X_train,
                        validation_steps=10,
                        callbacks=[earlystopping])
 
-model_cl.save("figure/lstm/lstm_steps_"+str(epochs)+"_epochs.h5")
+model_cl.save(os.path.join(script_dir ,"result/lstm/lstm_class_steps_"+str(epochs)+"_epochs.h5"))
 print("saved classification model to disk")
 model_cl.summary()
 
@@ -258,7 +256,7 @@ def output_result(y_predict_r, y_predict_label, epochs):
     s2 = pd.Series(norm_, name='norm')
     s1 = pd.Series(action_, name='action')
     df_res = pd.concat([s1, s2], axis=1)
-    df_res.to_json('result/lstm_prediction_' + str(epochs) + '.json')
+    df_res.to_json(os.path.join(script_dir ,'result/lstm_prediction_' + str(epochs) + '.json'))
     return df_res
 
 df=output_result(y_predict_r,y_predict_label,epochs)

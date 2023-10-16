@@ -6,11 +6,13 @@ import seaborn as sns
 import numpy as np
 from itertools import repeat
 from sklearn.preprocessing import OneHotEncoder,normalize,LabelEncoder
+import os
+script_dir = os.path.dirname(__file__)
 
-m1=open('data/match_1.json')
+m1=open(os.path.join(script_dir ,'data/match_1.json'))
 df1 = json.load(m1)
 
-m2=open('data/match_2.json')
+m2=open(os.path.join(script_dir ,'data/match_2.json'))
 df2 = json.load(m2)
 
 df1=pd.DataFrame(df1)
@@ -36,7 +38,7 @@ category = df2.label.value_counts()
 plt.title("match2")
 plt.pie(x=category.values, labels=category.index, counterclock=False, startangle=90)
 plt.legend(category.index)
-plt.savefig('figure/analyze/compare_action.png')
+plt.savefig(os.path.join(script_dir ,'figure/analyze/compare_action.png'))
 print('action pie comparison is saved')
 
 df2 = df2.drop(df2[df2['label'] == 'no action'].index) # remove missing values
@@ -82,7 +84,7 @@ for i, v in enumerate(idx1):
     sns.histplot(x=norm1_cat, kde=True, stat='density', color='red', alpha=0.4).set(title=v)
     sns.histplot(x=norm2_cat, kde=True, stat='density', color='green', alpha=0.4).set(title=v)
 
-plt.savefig('figure/analyze/compare_hist.png')
+plt.savefig(os.path.join(script_dir ,'figure/analyze/compare_hist.png'))
 print('hist comparison is saved')
 
 #boxplot
@@ -95,7 +97,7 @@ plt.figure(
 )
 sns.boxplot(data=df_total,x='norm',y='label',hue='match')
 plt.grid()
-plt.savefig('figure/analyze/compare_boxplot.png')
+plt.savefig(os.path.join(script_dir ,'figure/analyze/compare_boxplot.png'))
 print('boxplot comparison is saved')
 
 plt.figure(
@@ -112,7 +114,7 @@ plt.plot(norm2_)
 plt.xlim(0,len(norm2_))
 plt.ylim(0,800)
 plt.title('match_2')
-plt.savefig('figure/analyze/movement.png')
+plt.savefig(os.path.join(script_dir ,'figure/analyze/movement.png'))
 print('acceleration by timestep is saved')
 
 

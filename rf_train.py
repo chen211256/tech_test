@@ -15,20 +15,18 @@ from collections import defaultdict
 import warnings
 warnings.filterwarnings("ignore")
 
-m1 = open('data/match_1.json')
+import os
+script_dir = os.path.dirname(__file__)
+
+m1 = open(os.path.join(script_dir ,'data/match_1.json'))
 df1 = json.load(m1)
 
-m2 = open('data/match_2.json')
-df2 = json.load(m2)
 
 df1 = pd.DataFrame(df1)
-df2 = pd.DataFrame(df2)
+
 
 df1[['label']] = df1[['label']].astype('category')
-df2[['label']] = df2[['label']].astype('category')
 
-
-df2 = df2.drop(df2[df2['label'] == 'no action'].index)
 
 def flatten(l):
     return [item for sublist in l for item in sublist]
@@ -45,10 +43,8 @@ def flatten_column(df):
     return flatten(label_), flatten(norm_)
 
 lab1_, norm1_=flatten_column(df1)
-lab2_, norm2_=flatten_column(df2)
-df1_long=pd.DataFrame({'label':lab1_,'norm':norm1_})
-df2_long=pd.DataFrame({'label':lab2_,'norm':norm2_})
 
+df1_long=pd.DataFrame({'label':lab1_,'norm':norm1_})
 
 
 # Creating a instance of label Encoder.
@@ -123,6 +119,7 @@ y_test_c=np.squeeze(y_test_c)
 
 rf_r = RandomForestRegressor(random_state=1234)
 rf_r.fit(X_train, y_train_r)
+
 y_predict_train_r=rf_r.predict(X_train)
 y_predict_val_r=rf_r.predict(X_val)
 y_predict_test_r=rf_r.predict(X_test)
@@ -192,7 +189,7 @@ def output_result(y_predict_r, y_predict_label,):
     s2 = pd.Series(norm_, name='norm')
     s1 = pd.Series(action_, name='action')
     df_res = pd.concat([s1, s2], axis=1)
-    df_res.to_json('result/rf_prediction.json')
+    df_res.to_json(os.path.join(script_dir ,'result/rf_prediction.json'))
     return df_res
 
 """
